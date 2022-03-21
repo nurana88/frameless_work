@@ -1,0 +1,13 @@
+{
+  "require": {
+    "php": "^8.0",
+    "ext-json": "*",
+    "ext-pdo": "*",
+    "laminas/laminas-diactoros": "^2.8",
+    "laminas/laminas-httphandlerrunner": "^2.1",
+    "league/route": "^5.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9"
+  }
+}

@@ -1,0 +1,37 @@
+version: "3"
+services:
+  fpm:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./:/app:delegated
+      - "./resources/docker/php-fpm/overrides.ini:/usr/local/etc/php/conf.d/666-overrides.ini"
+    environment:
+      DB_HOST: "mysql"
+      DB_NAME: "mydatabase"
+      DB_USERNAME: "root"
+      DB_PASSWORD: "mypassword"
+    depends_on:
+      - mysql
+
+  nginx:
+    image: nginx:1.21.6-alpine
+    volumes:
+      - .:/app:delegated
+      - ./resources/docker/nginx/default.conf:/etc/nginx/nginx.conf
+    ports:
+      - "8080:80"
+    depends_on:
+      - fpm
+
+  mysql:
+    platform: linux/x86_64
+    image: mysql:8.0.28
+    environment:
+      MYSQL_ROOT_PASSWORD: "mypassword"
+      MYSQL_DATABASE: "mydatabase"
+    ports:
+      - "8000:3306"
+    volumes:
+      - ./resources/database/dump.sql:/docker-entrypoint-initdb.d/dump.sql
