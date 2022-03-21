@@ -4,14 +4,14 @@ function acceptInt(int $x){
     if ($x>10){
         // throw new \Exception();
 
-        $exception=new LogicException("x must be =< than 10");
-        throw $exception;
+        throw new InvalidArgumentException("x must be =< than 10");
+        //throw $exception;
     }
     echo "success";
 }
 
 try {
-    acceptInt(5);
+    acceptInt(30);
     echo "Hi!";
 } catch (InvalidArgumentException $e) {
     echo "I can catch invalid arg exception";
