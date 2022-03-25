@@ -11,39 +11,26 @@ $request = Laminas\Diactoros\ServerRequestFactory::fromGlobals();
 
 $router = new League\Route\Router;
 
-//function getHandler (ServerRequestInterface $req): ResponseInterface
-//{
-//    $response = new Laminas\Diactoros\Response;
-//    $response->getBody()->write('<h1>Hello, World!</h1>');
-//    return $response;
-//};
-
-$router->map('GET', '/', function (ServerRequestInterface $request): ResponseInterface {
+$handler=function (ServerRequestInterface $req): ResponseInterface
+{
     $response = new Laminas\Diactoros\Response;
     $response->getBody()->write('<h1>Hello, World!</h1>');
     return $response;
-});
+};
+$router->map('GET', '/',$handler);
 
-//$response = $router->dispatch($request);
-//$emitter = new \Laminas\HttpHandlerRunner\Emitter\SapiEmitter();
-//$emitter->emit($response);
+$emitter = new \Laminas\HttpHandlerRunner\Emitter\SapiEmitter();
 
 try{
     $response = $router->dispatch($request);
-    $requestUri=parse_url($_SERVER['REQUEST_URI']);
-    $requestPath=$requestUri['path'];
-    if ($requestPath!="/"){
-        throw new \InvalidArgumentException("Route doesn't exist");
-    }
-    $emitter = new \Laminas\HttpHandlerRunner\Emitter\SapiEmitter();
-    $emitter->emit($response);
-} catch (InvalidArgumentException $inv){
-    echo "Invalid argument" .$inv->getMessage();
+} catch (\League\Route\Http\Exception\NotFoundException $e) {
+    $response=new \Laminas\Diactoros\Response("Not found", 404);
 } catch(Exception $e){
-    echo "Exception was caught" .$e->getMessage();
+    $response=new \Laminas\Diactoros\Response("Server error", 500);
     // $response->getBody()->write('<h1>Path doesnt exist!</h1>');
 }
 
+$emitter->emit($response);
 
 
 
